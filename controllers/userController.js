@@ -42,11 +42,55 @@ const securePassword = async(password) => {
  }
 
 
+//   login Method
+
+const user_login = async(req,res) =>{
+    try{
+
+        const email = req.body.email;
+        const password = req.body.password;
+
+        const userData = await User.findOne({email:email});
+        if(userData){
+            const passwordMatch = await bcryptjs.compare(password,userData.password);    
+            if(passwordMatch){
+                const userResult = {
+                    _id:userData._id,
+                    name:userData.name,
+                    email:userData.email,
+                    password:userData.password,
+                    image:userData.image,
+                    mobile:userData.mobile,
+                    type:userData.type,
+                }
+                const response = {
+                    success:true,
+                    msg:" User Details",
+                    data:userResult
+                }
+                res.status(200).send(response);
+            }
+            else{
+                res.status(200).send({success:false,msg:" Login Details are incorrect"})
+            }
+        }
+            else{
+             res.status(200).send({success:false,msg:" Login Details are incorrects"})
+            }
+
+    } catch (error){
+        res.status(400).send(error.message);
+    }
+}
+
+
+
 
 
 
 
  module.exports ={
     register_user,
+    user_login
 
  }

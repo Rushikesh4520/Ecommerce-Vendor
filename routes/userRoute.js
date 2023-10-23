@@ -32,9 +32,11 @@ const upload = multer({ storage: storage });
 
 const user_controller = require("../controllers/userController");
 
+//Register route
 user_route.post("/register",upload.single("image"),user_controller.register_user);
 
-
+// Loin route
+user_route.post("/login", user_controller.user_login);
 
 
 
