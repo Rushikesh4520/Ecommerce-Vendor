@@ -22,4 +22,6 @@
 // npm i body-parser 
   <br>
 // npm i bcryptjs
+  <br>
+npm i jsonwebtoken
 

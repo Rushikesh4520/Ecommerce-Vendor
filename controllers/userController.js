@@ -1,5 +1,19 @@
 const User = require("../models/userModel");
 const bcryptjs = require("bcryptjs");
+const config = require("../config/config");
+const jwt = require("jsonwebtoken");
+
+const create_token = async(id) =>{
+    try{
+
+        const token = await jwt.sign({_id:id},config.secret_jwt);
+        return token;
+
+    }catch (error){
+        res.status(400).send(error.message);
+    }
+}
+
 
 const securePassword = async(password) => {
 
@@ -54,6 +68,7 @@ const user_login = async(req,res) =>{
         if(userData){
             const passwordMatch = await bcryptjs.compare(password,userData.password);    
             if(passwordMatch){
+                const tokenData = await create_token(userData._id);
                 const userResult = {
                     _id:userData._id,
                     name:userData.name,
@@ -62,6 +77,7 @@ const user_login = async(req,res) =>{
                     image:userData.image,
                     mobile:userData.mobile,
                     type:userData.type,
+                    token:tokenData
                 }
                 const response = {
                     success:true,
