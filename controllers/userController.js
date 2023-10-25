@@ -100,13 +100,39 @@ const user_login = async(req,res) =>{
 }
 
 
+//Update password method
+
+const update_password = async (req,res) => {
+    try{
+
+        const user_id =req.body.user_id;
+        const password =req.body.password;
+
+        const data = await User.findOne({ _id:user_id});
+        if (data){
+            const newPassword = await securePassword(password);
+            const userData = await User.findByIdAndUpdate ({ _id:user_id} ,{$set:{
+                password:newPassword
+            }});
+
+            res.status(200).send({success:true,msg : "Your password has been updated"});
+        }
+        else{
+            res.status(200).send({success:false,msg : " User Id not Found!"})
+        }
+
+
+    } catch (error){
+        res.status(400).send(error.message);
+    }
+};
 
 
 
 
-
- module.exports ={
+ module.exports = {
     register_user,
-    user_login
+    user_login,
+    update_password
 
  }
