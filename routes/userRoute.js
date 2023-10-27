@@ -48,6 +48,11 @@ user_route.get("/test",auth,(req,res)=>{
 // update password rote
 user_route.post('/update-password',auth,user_controller.update_password);
 
+// forget password route
+user_route.post('/forget-password',user_controller.forget_password);
+
+// Reset password
+user_route.get('/reset-password',user_controller.reset_password);
 
 
 

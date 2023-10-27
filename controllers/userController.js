@@ -2,6 +2,51 @@ const User = require("../models/userModel");
 const bcryptjs = require("bcryptjs");
 const config = require("../config/config");
 const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
+const randomstring = require("randomstring");
+
+
+const sendResetPasswordMail = async(name,email,token) =>{
+    try{
+
+        const transporter = nodemailer.createTransport({
+            host:'smtp.gmail.com',
+            port:587,
+            secure:false,
+            requireTLS:true,
+            auth:{
+                user:config.emailUser,
+                pass:config.emailPassword
+            }        
+        });
+
+        const mailOPtions = {
+          from: config.emailUser,
+          to: email,
+          subject: " for reset password",
+          html:
+            "<p> Hii " +
+            name +
+            ', Please copy the link <a href="http://localhost:3000/api/reset-password?token='+token+'" > and reset ur password</a>'
+        };
+        transporter.sendMail(mailOPtions,function(error,info){
+            if(error){
+                console.log(error);
+            }
+            else{
+                console.log("mail has been sent:- ",info.response);
+
+            }
+
+        })
+
+
+    } catch{
+        res.status(400).send({success:false,msg:error.message});
+    }
+}
+
+
 
 const create_token = async(id) =>{
     try{
@@ -128,11 +173,62 @@ const update_password = async (req,res) => {
 };
 
 
+const forget_password = async (req,res) =>{
+    try{
+
+        const email= req.body.email;
+        const userData = await User.findOne({email:req.body.email});
+
+        if(userData){
+
+
+            const randomString = randomstring.generate();
+            const data = await User.updateOne({email:email},{$set:{token:randomString}})
+            sendResetPasswordMail(userData.name,userData.email,randomString)
+            res.status(200).send({success: true,msg: "Please check your inbox mail and reset password"});
+
+        }
+        else{
+            res.status(200).send({success:true,msg:"This email does not exist"})
+        }
+
+    } catch (error){
+        res.status(400).send({success:false,msg:error.message});
+
+    }
+}
+
+
+const reset_password = async(req,res) => {
+    try{
+        const token = req.query.token;
+        const tokenData = await User.findOne({ token:token});
+        if(tokenData){
+            const password = req.body.password;
+            const newPassword = await securePassword(password);
+            const userData = User.findByIdAndUpdate({ _id:tokenData._id},{$set:{password:newPassword ,token:''}},{new:true});
+            res.status(200).send({ success: true, msg:"User Password has been reset", data:userData });
+
+
+        }
+        else{
+            res.status(200).send({ success: false, msg: "This link has been expired" });
+
+        }
+
+
+    } catch (error){
+        res.status(400).send({ success: false, msg: error.message });
+    }
+}
+
 
 
  module.exports = {
     register_user,
     user_login,
-    update_password
+    update_password,
+    forget_password,
+    reset_password
 
  }

@@ -11,17 +11,22 @@
 
 <h3>pkgs :-</h3>
 <br>
-// npm  init -y
+1. npm  init -y
   <br>
-// npm i express 
+2. npm i express 
   <br>
-// npm i mongoose
+3. npm i mongoose
   <br>
-// npm i multer 
+4. npm i multer 
   <br>
-// npm i body-parser 
+5. npm i body-parser 
   <br>
-// npm i bcryptjs
+6. npm i bcryptjs
   <br>
-npm i jsonwebtoken
+7. npm i jsonwebtoken
+  <br>
+8. npm i randomstring
+  <br>
+9. npm i nodemailer
+  <br>
 
